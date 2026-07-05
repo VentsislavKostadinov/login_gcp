@@ -34,10 +34,10 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v3
+      - name: Setup Firebase CLI
+        run: npm install -g firebase-tools
 
-      - name: Upload to GCS bucket
-        run: |
-          gsutil -m rsync -r -d dist gs://login_gcp_bucket
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting --project project-97044f70-80d8-45e2-98d --non-interactive
