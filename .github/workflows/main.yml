@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build, Upload to GCS, and Deploy to GitHub Pages
 
 on:
   push:
@@ -33,10 +33,17 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
         with:
-          enablement: true
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Upload to GCS bucket
+        run: gsutil -m rsync -r -d dist gs://login_gcp_bucket
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
